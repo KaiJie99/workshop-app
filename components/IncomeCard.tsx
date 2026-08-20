@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { brand } from "@/lib/config/brand";
-import type { Income } from "./PocketGoalsClient";
+import type { Goal, Income } from "./PocketGoalsClient";
 import { validateIncome } from "./IncomeForm";
 
 function formatMoney(amount: number, currency: string) {
@@ -18,16 +18,20 @@ function formatMoney(amount: number, currency: string) {
 
 export default function IncomeCard({
   income,
+  goals,
   onUpdate,
   onDelete,
 }: {
   income: Income;
+  goals: Goal[];
   onUpdate: (
     id: string,
     title: string,
     amount: number,
     source: string,
     note: string,
+    goalId: string | null,
+    receivedOn: string,
   ) => Promise<string | null>;
   onDelete: (id: string) => Promise<void>;
 }) {
@@ -37,8 +41,12 @@ export default function IncomeCard({
   const [amount, setAmount] = useState(String(income.amount));
   const [source, setSource] = useState(income.source ?? "");
   const [note, setNote] = useState(income.note ?? "");
+  const [goalId, setGoalId] = useState(income.goal_id ?? "");
+  const [receivedOn, setReceivedOn] = useState(income.received_on ?? "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const linkedGoal = goals.find((g) => g.id === income.goal_id);
 
   async function handleSave() {
     const invalid = validateIncome(title, amount, source, note);
@@ -54,6 +62,8 @@ export default function IncomeCard({
       Number(amount),
       source.trim(),
       note.trim(),
+      goalId || null,
+      receivedOn,
     );
     setBusy(false);
     if (saveError) {
@@ -103,6 +113,36 @@ export default function IncomeCard({
           />
         </div>
         <div>
+          <label htmlFor={`inc-goal-${income.id}`} className="block text-sm font-medium">
+            Link to goal
+          </label>
+          <select
+            id={`inc-goal-${income.id}`}
+            value={goalId}
+            onChange={(e) => setGoalId(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+          >
+            <option value="">No goal</option>
+            {goals.map((goal) => (
+              <option key={goal.id} value={goal.id}>
+                {goal.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor={`inc-date-${income.id}`} className="block text-sm font-medium">
+            Date
+          </label>
+          <input
+            id={`inc-date-${income.id}`}
+            type="date"
+            value={receivedOn}
+            onChange={(e) => setReceivedOn(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+          />
+        </div>
+        <div>
           <label htmlFor={`inc-note-${income.id}`} className="block text-sm font-medium">
             Note
           </label>
@@ -131,6 +171,8 @@ export default function IncomeCard({
               setAmount(String(income.amount));
               setSource(income.source ?? "");
               setNote(income.note ?? "");
+              setGoalId(income.goal_id ?? "");
+              setReceivedOn(income.received_on ?? "");
               setError(null);
             }}
             className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
@@ -157,6 +199,13 @@ export default function IncomeCard({
             <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
               <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700">
                 {income.source}
+              </span>
+            </div>
+          )}
+          {linkedGoal && (
+            <div className="mt-1 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">
+                🎯 {linkedGoal.name}
               </span>
             </div>
           )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Goal } from "./PocketGoalsClient";
 
 export const TITLE_MAX = 120;
 export const SOURCE_MAX = 60;
@@ -26,19 +27,25 @@ export function validateIncome(
 }
 
 export default function IncomeForm({
+  goals,
   onSubmit,
 }: {
+  goals: Goal[];
   onSubmit: (
     title: string,
     amount: number,
     source: string,
     note: string,
+    goalId: string | null,
+    receivedOn: string,
   ) => Promise<string | null>;
 }) {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [source, setSource] = useState("");
   const [note, setNote] = useState("");
+  const [goalId, setGoalId] = useState("");
+  const [receivedOn, setReceivedOn] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -56,6 +63,8 @@ export default function IncomeForm({
       Number(amount),
       source.trim(),
       note.trim(),
+      goalId || null,
+      receivedOn,
     );
     setBusy(false);
     if (submitError) {
@@ -66,6 +75,8 @@ export default function IncomeForm({
     setAmount("");
     setSource("");
     setNote("");
+    setGoalId("");
+    setReceivedOn("");
   }
 
   return (
@@ -109,6 +120,36 @@ export default function IncomeForm({
           value={source}
           onChange={(e) => setSource(e.target.value)}
           placeholder="e.g. Employer, Freelance"
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+        />
+      </div>
+      <div>
+        <label htmlFor="income-goal" className="block text-sm font-medium">
+          Link to goal <span className="font-normal text-gray-500">(optional)</span>
+        </label>
+        <select
+          id="income-goal"
+          value={goalId}
+          onChange={(e) => setGoalId(e.target.value)}
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+        >
+          <option value="">No goal</option>
+          {goals.map((goal) => (
+            <option key={goal.id} value={goal.id}>
+              {goal.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="income-date" className="block text-sm font-medium">
+          Date <span className="font-normal text-gray-500">(optional, defaults to today)</span>
+        </label>
+        <input
+          id="income-date"
+          type="date"
+          value={receivedOn}
+          onChange={(e) => setReceivedOn(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
         />
       </div>

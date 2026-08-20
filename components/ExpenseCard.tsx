@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { brand } from "@/lib/config/brand";
-import type { Expense, Goal } from "./PocketGoalsClient";
+import type { Expense } from "./PocketGoalsClient";
 import { validateExpense } from "./ExpenseForm";
 
 function formatMoney(amount: number, currency: string) {
@@ -18,19 +18,17 @@ function formatMoney(amount: number, currency: string) {
 
 export default function ExpenseCard({
   expense,
-  goals,
   onUpdate,
   onDelete,
 }: {
   expense: Expense;
-  goals: Goal[];
   onUpdate: (
     id: string,
     title: string,
     amount: number,
     category: string,
     note: string,
-    goalId: string | null,
+    spentOn: string,
   ) => Promise<string | null>;
   onDelete: (id: string) => Promise<void>;
 }) {
@@ -40,11 +38,9 @@ export default function ExpenseCard({
   const [amount, setAmount] = useState(String(expense.amount));
   const [category, setCategory] = useState(expense.category ?? "");
   const [note, setNote] = useState(expense.note ?? "");
-  const [goalId, setGoalId] = useState(expense.goal_id ?? "");
+  const [spentOn, setSpentOn] = useState(expense.spent_on ?? "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  const linkedGoal = goals.find((g) => g.id === expense.goal_id);
 
   async function handleSave() {
     const invalid = validateExpense(title, amount, category, note);
@@ -60,7 +56,7 @@ export default function ExpenseCard({
       Number(amount),
       category.trim(),
       note.trim(),
-      goalId || null,
+      spentOn,
     );
     setBusy(false);
     if (saveError) {
@@ -110,22 +106,16 @@ export default function ExpenseCard({
           />
         </div>
         <div>
-          <label htmlFor={`exp-goal-${expense.id}`} className="block text-sm font-medium">
-            Linked goal
+          <label htmlFor={`exp-date-${expense.id}`} className="block text-sm font-medium">
+            Date
           </label>
-          <select
-            id={`exp-goal-${expense.id}`}
-            value={goalId}
-            onChange={(e) => setGoalId(e.target.value)}
+          <input
+            id={`exp-date-${expense.id}`}
+            type="date"
+            value={spentOn}
+            onChange={(e) => setSpentOn(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
-          >
-            <option value="">No goal</option>
-            {goals.map((goal) => (
-              <option key={goal.id} value={goal.id}>
-                {goal.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
         <div>
           <label htmlFor={`exp-note-${expense.id}`} className="block text-sm font-medium">
@@ -156,7 +146,7 @@ export default function ExpenseCard({
               setAmount(String(expense.amount));
               setCategory(expense.category ?? "");
               setNote(expense.note ?? "");
-              setGoalId(expense.goal_id ?? "");
+              setSpentOn(expense.spent_on ?? "");
               setError(null);
             }}
             className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
@@ -183,14 +173,6 @@ export default function ExpenseCard({
             {expense.category && (
               <span className="rounded-full bg-gray-100 px-2 py-0.5">
                 {expense.category}
-              </span>
-            )}
-            {linkedGoal && (
-              <span
-                className="rounded-full px-2 py-0.5 text-white"
-                style={{ backgroundColor: brand.primaryColor }}
-              >
-                {linkedGoal.name}
               </span>
             )}
           </div>

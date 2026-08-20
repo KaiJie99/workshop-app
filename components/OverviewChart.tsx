@@ -26,7 +26,6 @@ export default function OverviewChart({
 }) {
   const balance = totalIncome - totalExpense;
   const max = Math.max(totalIncome, totalExpense, 1);
-
   const bars: Slice[] = [
     { label: "Income", value: totalIncome, color: "#059669" },
     { label: "Expenses", value: totalExpense, color: "#dc2626" },
@@ -64,7 +63,7 @@ export default function OverviewChart({
           style={{ backgroundColor: `${brand.primaryColor}14` }}
         >
           <p className="text-xs" style={{ color: brand.primaryColor }}>
-            Balance
+            Savings
           </p>
           <p
             className="mt-1 font-semibold"

@@ -27,11 +27,13 @@ export default function GoalForm({
   onSubmit: (
     name: string,
     targetAmount: number,
+    targetDate: string,
     notes: string,
   ) => Promise<string | null>;
 }) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
+  const [targetDate, setTargetDate] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -45,7 +47,12 @@ export default function GoalForm({
     }
     setBusy(true);
     setError(null);
-    const submitError = await onSubmit(name.trim(), Number(amount), notes.trim());
+    const submitError = await onSubmit(
+      name.trim(),
+      Number(amount),
+      targetDate,
+      notes.trim(),
+    );
     setBusy(false);
     if (submitError) {
       setError(submitError);
@@ -53,6 +60,7 @@ export default function GoalForm({
     }
     setName("");
     setAmount("");
+    setTargetDate("");
     setNotes("");
   }
 
@@ -85,6 +93,18 @@ export default function GoalForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="e.g. 3000"
+          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+        />
+      </div>
+      <div>
+        <label htmlFor="goal-date" className="block text-sm font-medium">
+          Target date <span className="font-normal text-gray-500">(optional)</span>
+        </label>
+        <input
+          id="goal-date"
+          type="date"
+          value={targetDate}
+          onChange={(e) => setTargetDate(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
         />
       </div>

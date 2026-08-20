@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { brand } from "@/lib/config/brand";
 import type { Goal } from "./PocketGoalsClient";
 import { validateGoal } from "./GoalForm";
@@ -28,6 +28,7 @@ export default function GoalCard({
     id: string,
     name: string,
     targetAmount: number,
+    targetDate: string,
     notes: string,
   ) => Promise<string | null>;
   onDelete: (id: string) => Promise<void>;
@@ -36,12 +37,28 @@ export default function GoalCard({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [name, setName] = useState(goal.name);
   const [amount, setAmount] = useState(String(goal.target_amount));
+  const [targetDate, setTargetDate] = useState(goal.target_date ?? "");
   const [notes, setNotes] = useState(goal.notes ?? "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const target = Number(goal.target_amount);
   const percent = target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
+  const reached = target > 0 && saved >= target;
+
+  // Days left until the target date. Read "now" once after mount so the
+  // render itself stays pure (no impure Date.now() during render).
+  const [nowMs, setNowMs] = useState<number | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read clock once on mount
+    setNowMs(Date.now());
+  }, []);
+  const daysLeft =
+    goal.target_date && nowMs !== null
+      ? Math.ceil(
+          (new Date(goal.target_date).getTime() - nowMs) / (1000 * 60 * 60 * 24),
+        )
+      : null;
 
   async function handleSave() {
     const invalid = validateGoal(name, amount, notes);
@@ -51,7 +68,13 @@ export default function GoalCard({
     }
     setBusy(true);
     setError(null);
-    const saveError = await onUpdate(goal.id, name.trim(), Number(amount), notes.trim());
+    const saveError = await onUpdate(
+      goal.id,
+      name.trim(),
+      Number(amount),
+      targetDate,
+      notes.trim(),
+    );
     setBusy(false);
     if (saveError) {
       setError(saveError);
@@ -89,6 +112,18 @@ export default function GoalCard({
           />
         </div>
         <div>
+          <label htmlFor={`goal-date-${goal.id}`} className="block text-sm font-medium">
+            Target date
+          </label>
+          <input
+            id={`goal-date-${goal.id}`}
+            type="date"
+            value={targetDate}
+            onChange={(e) => setTargetDate(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
+          />
+        </div>
+        <div>
           <label htmlFor={`goal-notes-${goal.id}`} className="block text-sm font-medium">
             Notes
           </label>
@@ -115,6 +150,7 @@ export default function GoalCard({
               setEditing(false);
               setName(goal.name);
               setAmount(String(goal.target_amount));
+              setTargetDate(goal.target_date ?? "");
               setNotes(goal.notes ?? "");
               setError(null);
             }}
@@ -132,17 +168,44 @@ export default function GoalCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {/* User text is rendered as plain text (React escapes it) — data, not markup. */}
-          <h3 className="break-words font-semibold">{goal.name}</h3>
+          <h3 className="flex items-center gap-2 break-words font-semibold">
+            {goal.name}
+            {reached && (
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                🎉 Reached!
+              </span>
+            )}
+          </h3>
           <p className="mt-1 text-sm text-gray-600">
             {formatMoney(saved, goal.currency)} of{" "}
             {formatMoney(target, goal.currency)} ({percent}%)
           </p>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full"
-              style={{ width: `${percent}%`, backgroundColor: brand.primaryColor }}
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${percent}%`,
+                backgroundColor: reached ? "#059669" : brand.primaryColor,
+              }}
             />
           </div>
+          {daysLeft !== null && (
+            <p
+              className={`mt-2 text-xs font-medium ${
+                daysLeft < 0
+                  ? "text-red-600"
+                  : daysLeft <= 7
+                    ? "text-amber-600"
+                    : "text-gray-500"
+              }`}
+            >
+              {daysLeft < 0
+                ? `⏰ ${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"} overdue`
+                : daysLeft === 0
+                  ? "⏰ Due today"
+                  : `⏳ ${daysLeft} day${daysLeft === 1 ? "" : "s"} left (by ${new Date(goal.target_date as string).toLocaleDateString()})`}
+            </p>
+          )}
           {goal.notes && (
             <p className="mt-2 break-words whitespace-pre-wrap text-sm text-gray-600">
               {goal.notes}

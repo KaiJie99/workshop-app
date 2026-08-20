@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { Goal } from "./PocketGoalsClient";
 
 export const TITLE_MAX = 120;
 export const CATEGORY_MAX = 60;
@@ -27,23 +26,21 @@ export function validateExpense(
 }
 
 export default function ExpenseForm({
-  goals,
   onSubmit,
 }: {
-  goals: Goal[];
   onSubmit: (
     title: string,
     amount: number,
     category: string,
     note: string,
-    goalId: string | null,
+    spentOn: string,
   ) => Promise<string | null>;
 }) {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [note, setNote] = useState("");
-  const [goalId, setGoalId] = useState("");
+  const [spentOn, setSpentOn] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -61,7 +58,7 @@ export default function ExpenseForm({
       Number(amount),
       category.trim(),
       note.trim(),
-      goalId || null,
+      spentOn,
     );
     setBusy(false);
     if (submitError) {
@@ -72,7 +69,7 @@ export default function ExpenseForm({
     setAmount("");
     setCategory("");
     setNote("");
-    setGoalId("");
+    setSpentOn("");
   }
 
   return (
@@ -120,22 +117,16 @@ export default function ExpenseForm({
         />
       </div>
       <div>
-        <label htmlFor="expense-goal" className="block text-sm font-medium">
-          Linked goal <span className="font-normal text-gray-500">(optional)</span>
+        <label htmlFor="expense-date" className="block text-sm font-medium">
+          Date <span className="font-normal text-gray-500">(optional, defaults to today)</span>
         </label>
-        <select
-          id="expense-goal"
-          value={goalId}
-          onChange={(e) => setGoalId(e.target.value)}
+        <input
+          id="expense-date"
+          type="date"
+          value={spentOn}
+          onChange={(e) => setSpentOn(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-2 focus:outline-offset-1"
-        >
-          <option value="">No goal</option>
-          {goals.map((goal) => (
-            <option key={goal.id} value={goal.id}>
-              {goal.name}
-            </option>
-          ))}
-        </select>
+        />
       </div>
       <div>
         <label htmlFor="expense-note" className="block text-sm font-medium">

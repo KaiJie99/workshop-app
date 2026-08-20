@@ -14,11 +14,15 @@ create table if not exists public.goals (
   user_id       uuid not null references auth.users (id) on delete cascade,
   name          text not null check (char_length(name) between 1 and 120),
   target_amount numeric(12, 2) not null check (target_amount >= 0),
+  target_date   date,
   currency      text not null default 'MYR' check (char_length(currency) = 3),
   notes         text check (notes is null or char_length(notes) <= 2000),
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
+
+-- Safe upgrade for existing databases: add the column if it's missing.
+alter table public.goals add column if not exists target_date date;
 
 -- Speeds up "list MY goals, newest first".
 create index if not exists goals_user_created_idx
@@ -55,6 +59,7 @@ create index if not exists expenses_goal_idx
 create table if not exists public.incomes (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users (id) on delete cascade,
+  goal_id     uuid references public.goals (id) on delete set null,
   title       text not null check (char_length(title) between 1 and 120),
   amount      numeric(12, 2) not null check (amount >= 0),
   currency    text not null default 'MYR' check (char_length(currency) = 3),
@@ -65,9 +70,15 @@ create table if not exists public.incomes (
   updated_at  timestamptz not null default now()
 );
 
--- Speeds up "list MY income, newest first".
+-- Safe upgrade for existing databases: link savings (income) to a goal.
+alter table public.incomes add column if not exists goal_id uuid
+  references public.goals (id) on delete set null;
+
+-- Speeds up "list MY income, newest first" and "income for a goal".
 create index if not exists incomes_user_created_idx
   on public.incomes (user_id, created_at desc);
+create index if not exists incomes_goal_idx
+  on public.incomes (goal_id);
 
 -- ─────────────────────────────────────────────────────────────
 -- 3) Row Level Security: the DATABASE enforces "you only touch
