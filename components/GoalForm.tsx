@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { brand } from "@/lib/config/brand";
 
 export const NAME_MAX = 120;
 export const NOTES_MAX = 2000;
@@ -60,7 +59,7 @@ export default function GoalForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-gray-200 p-4"
+      className="pg-card space-y-3 rounded-2xl p-5"
     >
       <div>
         <label htmlFor="goal-name" className="block text-sm font-medium">
@@ -106,8 +105,7 @@ export default function GoalForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded-md px-4 py-2 font-medium text-white disabled:opacity-60"
-        style={{ backgroundColor: brand.primaryColor }}
+        className="pg-gradient-btn rounded-lg px-4 py-2 font-semibold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-60"
       >
         {busy ? "Adding…" : "Add goal"}
       </button>

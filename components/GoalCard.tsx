@@ -128,7 +128,7 @@ export default function GoalCard({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 p-4">
+    <div className="pg-card rounded-2xl border-l-4 p-4" style={{ borderLeftColor: brand.primaryColor }}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {/* User text is rendered as plain text (React escapes it) — data, not markup. */}

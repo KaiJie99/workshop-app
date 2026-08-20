@@ -16,3 +16,55 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* ── PocketGoals colourful helpers ─────────────────────────── */
+
+/* Soft page gradient used across app + marketing pages. */
+.pg-gradient-bg {
+  background:
+    radial-gradient(60rem 60rem at 10% -10%, #d1fae5 0%, transparent 55%),
+    radial-gradient(50rem 50rem at 110% 0%, #dbeafe 0%, transparent 50%),
+    radial-gradient(45rem 45rem at 50% 120%, #fce7f3 0%, transparent 55%),
+    #f8fafc;
+}
+
+/* Brand gradient for headings and accents. */
+.pg-gradient-text {
+  background: linear-gradient(90deg, #0f766e 0%, #2563eb 50%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pg-gradient-btn {
+  background: linear-gradient(90deg, #0f766e 0%, #14b8a6 100%);
+}
+.pg-gradient-btn:hover {
+  background: linear-gradient(90deg, #115e59 0%, #0d9488 100%);
+}
+
+/* Frosted card. */
+.pg-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px -12px rgba(15, 118, 110, 0.18);
+}
+
+/* Gentle float animation for hero art. */
+@keyframes pg-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.pg-float {
+  animation: pg-float 5s ease-in-out infinite;
+}
+
+@keyframes pg-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pg-fade-up {
+  animation: pg-fade-up 0.6s ease-out both;
+}
+

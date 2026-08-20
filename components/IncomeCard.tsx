@@ -143,7 +143,7 @@ export default function IncomeCard({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 p-4">
+    <div className="pg-card rounded-2xl border-l-4 border-l-emerald-400 p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-3">

@@ -266,12 +266,12 @@ export default function PocketGoalsClient({
     incomes[0]?.currency ?? expenses[0]?.currency ?? goals[0]?.currency ?? "MYR";
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="pg-gradient-bg min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-white/40 bg-white/70 backdrop-blur-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <Link
             href="/"
-            className="flex items-center gap-2 text-lg font-semibold"
+            className="flex items-center gap-2 text-lg font-bold"
             style={{ color: brand.primaryColor }}
           >
             <Image src={brand.logo} alt={`${brand.name} logo`} width={28} height={28} />
@@ -281,7 +281,7 @@ export default function PocketGoalsClient({
             <span className="hidden text-gray-500 sm:inline">{userEmail}</span>
             <button
               onClick={handleSignOut}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 bg-white/70 px-3 py-1.5 text-gray-700 transition hover:bg-white"
             >
               Sign out
             </button>
@@ -290,11 +290,15 @@ export default function PocketGoalsClient({
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
-        {error && <p className="mb-6 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </p>
+        )}
 
         {/* ── Overview chart ───────────────────────────── */}
         {!loading && (
-          <section className="mb-12">
+          <section className="mb-12 pg-fade-up">
             <OverviewChart
               totalIncome={totalIncome}
               totalExpense={totalExpense}
@@ -305,7 +309,9 @@ export default function PocketGoalsClient({
 
         {/* ── Saving goals ─────────────────────────────── */}
         <section>
-          <h1 className="text-2xl font-bold">Saving goals</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
+            <span className="text-2xl">🎯</span> Saving goals
+          </h1>
           <div className="mt-6">
             <GoalForm onSubmit={handleCreateGoal} />
           </div>
@@ -332,7 +338,9 @@ export default function PocketGoalsClient({
 
         {/* ── Expense notes ────────────────────────────── */}
         <section className="mt-12">
-          <h2 className="text-2xl font-bold">Expense notes</h2>
+          <h2 className="flex items-center gap-2 text-2xl font-bold">
+            <span className="text-2xl">💸</span> Expense notes
+          </h2>
           <div className="mt-6">
             <ExpenseForm goals={goals} onSubmit={handleCreateExpense} />
           </div>
@@ -359,7 +367,9 @@ export default function PocketGoalsClient({
 
         {/* ── Income notes ─────────────────────────────── */}
         <section className="mt-12">
-          <h2 className="text-2xl font-bold">Income notes</h2>
+          <h2 className="flex items-center gap-2 text-2xl font-bold">
+            <span className="text-2xl">💰</span> Income notes
+          </h2>
           <div className="mt-6">
             <IncomeForm onSubmit={handleCreateIncome} />
           </div>

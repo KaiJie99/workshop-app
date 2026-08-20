@@ -4,6 +4,11 @@ import BrandHeader from "@/components/BrandHeader";
 import BackendNotConnected from "@/components/BackendNotConnected";
 import PocketGoalsClient from "@/components/PocketGoalsClient";
 
+// Never statically cache this protected page — always re-check auth on the
+// server for every request (including Back/Forward navigation).
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export default async function AppPage() {
   const supabase = await getSupabaseServerClient();
 

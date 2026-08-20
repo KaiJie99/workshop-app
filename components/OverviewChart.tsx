@@ -40,8 +40,10 @@ export default function OverviewChart({
   const incomeDash = incomeShare * circumference;
 
   return (
-    <div className="rounded-xl border border-gray-200 p-5">
-      <h2 className="text-lg font-bold">Overview</h2>
+    <div className="pg-card rounded-2xl p-5">
+      <h2 className="flex items-center gap-2 text-lg font-bold">
+        <span className="text-xl">📊</span> Overview
+      </h2>
 
       {/* Summary numbers */}
       <div className="mt-4 grid grid-cols-3 gap-3 text-center">

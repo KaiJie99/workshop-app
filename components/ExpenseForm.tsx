@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { brand } from "@/lib/config/brand";
 import type { Goal } from "./PocketGoalsClient";
 
 export const TITLE_MAX = 120;
@@ -79,7 +78,7 @@ export default function ExpenseForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-gray-200 p-4"
+      className="pg-card space-y-3 rounded-2xl p-5"
     >
       <div>
         <label htmlFor="expense-title" className="block text-sm font-medium">
@@ -155,8 +154,7 @@ export default function ExpenseForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded-md px-4 py-2 font-medium text-white disabled:opacity-60"
-        style={{ backgroundColor: brand.primaryColor }}
+        className="pg-gradient-btn rounded-lg px-4 py-2 font-semibold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-60"
       >
         {busy ? "Adding…" : "Add expense"}
       </button>
