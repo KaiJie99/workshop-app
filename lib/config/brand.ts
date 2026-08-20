@@ -5,13 +5,13 @@
 // ─────────────────────────────────────────────────────────────
 export const brand = {
   /** The app's name — shown in the header, homepage and browser tab. */
-  name: "MyStuff",
+  name: "PocketGoals",
 
   /** One-line tagline shown under the name on the homepage. */
-  tagline: "Your private list of everything that matters.",
+  tagline: "Private expense notes. Clearer saving goals.",
 
   /** Main accent color (any CSS color, e.g. "#4f46e5" or "rebeccapurple"). */
-  primaryColor: "#4f46e5",
+  primaryColor: "#0f766e",
 
   /** Logo image in /public — swap the file or point to a new one. */
   logo: "/logo.svg",
